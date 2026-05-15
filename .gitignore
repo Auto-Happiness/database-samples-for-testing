@@ -1,0 +1,15 @@
+# SQL Server crash dumps and logs
+mssql/data/log/
+mssql/data/secrets/
+
+# Large binary files
+*.gdmp
+*.dmp
+
+# IDE and OS files
+.DS_Store
+.vscode/
+*.swp
+*.swo
+*~
+.idea/
