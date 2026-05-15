@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql-silog-db
+    environment:
+      ACCEPT_EULA: 'Y'
+      MSSQL_SA_PASSWORD: 'OrchaAgentOS!2025'
+      MSSQL_PID: 'Developer'
+      MSSQL_MEMORY_LIMIT_MB: 4096
+      MSSQL_TCP_PORT: 1433
+    mem_limit: 4g
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+      - ./tapalord.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./init-db.sh:/docker-entrypoint-initdb.d/02-init.sh
+    networks:
+      - silog-network
+    # healthcheck removed to prevent dependency blocking; init script handles waiting
+    restart: unless-stopped
+
+  mssql-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql-silog-init
+    depends_on:
+      - mssql
+    volumes:
+      - .:/docker-entrypoint-initdb.d
+    user: root
+    environment:
+      SA_PASSWORD: 'OrchaAgentOS!2025'
+    entrypoint: /bin/bash /docker-entrypoint-initdb.d/init-db.sh
+    networks:
+      - silog-network
+
+volumes:
+  mssql_data:
+    driver: local
+
+networks:
+  silog-network:
+    driver: bridge

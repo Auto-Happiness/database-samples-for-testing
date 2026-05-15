@@ -1,0 +1,655 @@
+Table products [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	organization_id uuid
+	product_category_id uuid
+	promo_id uuid
+	product_reference_id varchar(12)
+	name varchar(255)
+	starting_price decimal(12,2)
+	min int
+	max int
+	content varchar(3000)
+	video_url varchar(100)
+	is_active boolean
+	publish boolean
+	created_date datetime
+	updated_date datetime
+
+	indexes {
+		(product_category_id) [ name: 'products_index_0' ]
+	}
+
+	Ref: products.organization_id > organizations.id
+	Ref: products.product_category_id > product_category.id
+	Ref: products.promo_id > promos.id
+}
+
+Table product_category [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	name varchar(100)
+	description varchar(100)
+	created_by varchar(20)
+	updated_by varchar(20)
+	created_date datetime
+	updated_date datetime
+}
+
+Table tags [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	name varchar(30)
+	created_date datetime
+}
+
+Table product_tags [headercolor: #175e7a] {
+	id integer [ pk, unique ]
+	product_id uuid
+	tag_id uuid
+
+	indexes {
+		(product_id, tag_id) [ name: 'product_tags_index_1', unique ]
+	}
+
+	Ref: product_tags.product_id > products.id
+	Ref: product_tags.tag_id > tags.id
+}
+
+Table product_images [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	product_id uuid
+	url varchar(255)
+	image_type varchar(10)
+	size int
+	created_date datetime
+
+	indexes {
+		(product_id) [ name: 'product_images_index_2' ]
+	}
+
+	Ref: product_images.product_id > products.id
+}
+
+Table product_extras [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	product_id uuid
+	extra_id uuid
+	created_date datetime
+
+	indexes {
+		(product_id) [ name: 'product_extras_index_3' ]
+	}
+
+	Ref: product_extras.product_id > products.id
+	Ref: product_extras.extra_id > extras.id
+}
+
+Table individual_types [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	name varchar
+	created_date datetime
+}
+
+Table accommodation_types [headercolor: #175e7a] {
+  id uuid [pk, unique]
+  name varchar(100)
+  description text
+  is_active boolean [default: true]
+  created_by varchar(20)
+  updated_by varchar(20)
+  created_date datetime
+  updated_date datetime
+}
+
+Table product_pricing [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	product_id uuid
+	individual_id uuid
+	price decimal(12,2)
+	created_date datetime
+
+	indexes {
+		(product_id, individual_id) [ name: 'product_pricing_index_5', unique ]
+	}
+
+	Ref: product_pricing.product_id > products.id
+	Ref: product_pricing.individual_id > individual_types.id
+}
+
+Table product_accommodation_prices [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	product_id uuid
+	accommodation_type_id uuid
+	name varchar(255)
+	quantity integer [default: 0]
+	max_capacities integer [default: 1]
+	net_price decimal(12,2)
+	gross_price decimal(12,2)
+	amenities jsonb
+	created_by varchar(50)
+	updated_by varchar(50)
+	created_date datetime
+	updated_date datetime
+
+	Ref: product_accommodation_prices.product_id > products.id
+	Ref: product_accommodation_prices.accommodation_type_id > accommodation_types.id
+}
+
+Table product_locations [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	product_id uuid
+	address varchar(130)
+	city varchar(100)
+	region varchar(100)
+	landmark varchar(50)
+	zipcode varchar(20)
+	longitude decimal
+	latitude decimal
+	created_date datetime
+
+	Ref: product_locations.product_id > products.id
+}
+
+Table date_types [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	name varchar(30)
+	description varchar(100)
+	created_date datetime
+}
+
+Table product_schedules [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	product_id uuid
+	product_location_id uuid
+	date_type_id uuid
+	name varchar(100)
+	date_from date
+	date_to date
+	days_of_week json
+	time_slot_from time
+	time_slot_to time
+	duration int
+	duration_type varchar(20)
+	notice int
+	notice_type varchar(20)
+	is_recurring boolean [ default: false ]
+	created_date datetime
+
+	indexes {
+		(product_id) [ name: 'product_schedules_index_6' ]
+		(date_from, date_to) [ name: 'product_schedules_index_7' ]
+	}
+
+	Ref: product_schedules.product_id > products.id
+	Ref: product_schedules.product_location_id > product_locations.id
+	Ref: product_schedules.date_type_id > date_types.id
+}
+
+Table product_schedules_timeslot [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	product_schedule_id uuid
+	start_date date
+	end_date date
+	start_time time
+	end_time time
+	slot_type varchar(20)
+	slot_remarks varchar(150)
+	slots_per_time int
+	slot_duration int
+	timezone varchar
+	is_active boolean
+	created_date datetime
+
+	indexes {
+		(product_schedule_id) [ name: 'product_schedules_timeslot_index_8' ]
+	}
+
+	Ref: product_schedules_timeslot.product_schedule_id > product_schedules.id
+}
+
+Table redemption_types [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	name varchar
+	description varchar
+	created_date date
+	created_by varchar
+	updated_date date
+	updated_by varchar
+}
+
+Table extras [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	organization_id uuid [ not null ]
+	name varchar [ not null ]
+	description varchar [ not null ]
+	price decimal [ not null ]
+	quantity int [ not null ]
+	image_path varchar
+	is_active boolean
+	created_date datetime
+
+	Ref: extras.organization_id > organizations.id
+}
+
+Table promos [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	organization_id uuid
+	promo_code varchar [ not null ]
+	validity_from datetime [ not null ]
+	validity_to datetime [ not null ]
+	redemption_limit_id uuid [ not null ]
+	discount integer [ not null ]
+	limit integer [ not null ]
+	remarks varchar
+	is_active boolean
+	created_date datetime
+
+	Ref: promos.organization_id > organizations.id
+	Ref: promos.redemption_limit_id > redemption_types.id
+}
+
+Table bundles [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	organization_id uuid
+	name varchar [ not null ]
+	bundle_code varchar [ not null ]
+	description varchar(500)
+	promo_id uuid
+	is_internal boolean [ default: false ]
+	base_price decimal(12,2) [ default: 0.00 ]
+	total_allocation int [ default: 0 ]
+	remaining_allocation int [ default: 0 ]
+	available_from datetime
+	available_until datetime
+	status varchar(20) [ default: 'active' ]
+	created_date datetime
+	created_by varchar
+	updated_date datetime
+	updated_by varchar
+
+	Ref: bundles.organization_id > organizations.id
+	Ref: bundles.promo_id > promos.id
+}
+
+Table bundle_extras [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	bundle_id uuid
+	extra_id uuid
+	price_override decimal(12,2)
+
+	Ref: bundle_extras.bundle_id > bundles.id
+	Ref: bundle_extras.extra_id > extras.id
+}
+
+Table bundle_pricing_tiers [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	bundle_id uuid
+	tier_name varchar [ not null ]
+	base_price decimal(12,2)
+	min_pax int
+	max_pax int
+	is_no_pax_limit boolean [ default: false ]
+	is_active boolean [ default: true ]
+
+	Ref: bundle_pricing_tiers.bundle_id > bundles.id
+}
+
+Table bundled_products [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	bundle_id uuid
+	product_id uuid
+	created_date datetime [ not null ]
+	created_by varchar [ not null ]
+	updated_date datetime
+	updated_by varchar
+
+	Ref: bundled_products.bundle_id > bundles.id
+	Ref: bundled_products.product_id > products.id
+}
+
+Table organizations [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	auth_external_id varchar [ not null, note: 'Clerk Organization ID' ]
+	name varchar [ not null ]
+	about text
+	website varchar
+	phone varchar
+	email varchar
+	main_address text
+	logo_url text
+	logo_mime_type varchar
+	logo_file_size int
+	facebook_url varchar
+	instagram_url varchar
+	youtube_url varchar
+	tiktok_url varchar
+	linkedin_url varchar
+	is_vendor boolean
+	is_verified boolean [ default: false ]
+	created_date datetime
+	updated_date datetime
+}
+
+Table members [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	auth_external_id varchar [ not null, note: 'Clerk Member ID' ]
+	first_name varchar [ not null ]
+	last_name varchar [ not null ]
+	friend_code varchar
+	email varchar
+	phone varchar
+	notes text
+	is_buying_agent boolean
+	is_active boolean [ default: true ]
+	created_date datetime
+	updated_date datetime
+}
+
+Table organization_members [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	organization_id uuid [ not null ]
+	member_id uuid [ not null ]
+	role varchar
+	job_title varchar
+	is_active boolean [ default: true ]
+	joined_at datetime
+
+	indexes {
+		(organization_id, member_id) [ name: 'organization_members_index_0', unique ]
+	}
+
+	Ref: organization_members.organization_id > organizations.id
+	Ref: organization_members.member_id > members.id
+}
+
+Table organization_branches [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	organization_id uuid [ not null ]
+	address varchar [ not null ]
+	city varchar
+	region varchar
+	zip_code varchar
+	is_active boolean [ default: true ]
+	created_date datetime
+
+	Ref: organization_branches.organization_id > organizations.id
+}
+
+Table orders [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	buyer_id uuid
+	product_id uuid
+	bundle_id uuid
+	organization_id uuid
+	order_reference varchar(20)
+	order_type varchar(10)
+	currency varchar(3)
+	total_gross_amount decimal(12,2)
+	total_net_amount decimal(12,2)
+	total_commission decimal(12,2)
+	total_tax decimal(12,2)
+	internal_notes varchar(50)
+	pipeline_status_id uuid
+	kanban_position int [ default: 1 ]
+	is_payed boolean
+	is_active boolean
+	is_for_payment boolean
+	is_editable boolean
+	created_date datetime
+	updated_date datetime
+
+	Ref: orders.buyer_id > members.id
+	Ref: orders.product_id > products.id
+	Ref: orders.bundle_id > bundles.id
+	Ref: orders.organization_id > organizations.id
+	Ref: orders.pipeline_status_id > order_pipeline_status_types.id
+}
+
+ 
+
+Table order_payments [headercolor: #E85D04] {
+  id uuid [pk, unique]
+  order_id uuid
+  payment_method_id uuid
+  transaction_reference varchar(255)
+  amount_paid decimal(12,2)
+  currency varchar(3)
+  exchange_rate decimal(12,6)
+  payment_status varchar [note: 'pending, cleared, failed, refunded']
+  receipt_url varchar(500)
+  paid_at datetime
+  created_by uuid
+  created_date datetime
+  updated_date datetime
+
+	Ref: order_payments.order_id > orders.id
+	Ref: order_payments.payment_method_id > payment_methods.id
+}
+
+Table order_activity [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	activity_icon varchar(20)
+	activity_type varchar(30)
+	description varchar(100)
+	is_active boolean
+	created_date datetime
+
+	Ref: order_activity.order_id > orders.id
+}
+
+Table order_individuals [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	individual_id uuid
+	quantity int
+	total_amount decimal(12,2)
+	is_active boolean
+	created_date datetime
+
+	Ref: order_individuals.order_id > orders.id
+	Ref: order_individuals.individual_id > individual_types.id
+}
+
+Table order_accommodation [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	product_location_id uuid
+	product_accommodation_id uuid
+	check_in_date date
+	check_out_date date
+	quantity int [ default: 1 ]
+	total_pax int [ default: 1 ]
+	unit_net_price decimal(12,2)
+	unit_gross_price decimal(12,2)
+	subtotal_net_amount decimal(12,2)
+	subtotal_gross_amount decimal(12,2)
+	additional_notes text
+	is_active boolean
+	created_date datetime
+	updated_date datetime
+
+	Ref: order_accommodation.order_id > orders.id
+	Ref: order_accommodation.product_accommodation_id > product_accommodation_prices.id
+	Ref: order_accommodation.product_location_id > product_locations.id
+}
+
+Table order_bundle_pricing_tier [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	bundle_pricing_tiers_id uuid
+
+	Ref: order_bundle_pricing_tier.order_id > orders.id
+	Ref: order_bundle_pricing_tier.bundle_pricing_tiers_id > bundle_pricing_tiers_.id
+
+}
+
+
+
+
+Table order_location [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	product_location_id uuid
+	additional_notes varchar(100)
+	is_active boolean
+	created_date datetime
+
+	Ref: order_location.order_id > orders.id
+	Ref: order_location.product_location_id > product_locations.id
+}
+
+Table order_extras [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	product_extra_id uuid [ note: 'Links to product_extras.id' ]
+	quantity int
+	total_amount decimal(12,2)
+	additional_notes varchar(100)
+	is_active boolean
+	created_date datetime
+
+	Ref: order_extras.order_id > orders.id
+	Ref: order_extras.product_extra_id > product_extras.id
+}
+
+Table order_invoice [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	reference varchar(20)
+	meta_data varchar
+	additional_notes varchar(100)
+	is_active boolean
+	created_date datetime
+
+	Ref: order_invoice.order_id > orders.id
+}
+
+Table order_session [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	product_location_id uuid
+	order_location_id uuid
+	additional_notes varchar(100)
+	is_active boolean
+	created_date datetime
+
+	Ref: order_session.order_id > orders.id
+	Ref: order_session.product_location_id > product_locations.id
+	Ref: order_session.order_location_id > order_location.id
+}
+
+Table order_pipeline_status_types [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	organization_id uuid
+	name varchar(30)
+	description varchar(50)
+	is_active boolean
+	sequence int
+	is_for_payment boolean
+	created_by varchar(255)
+	created_date datetime
+	updated_by varchar(255)
+	updated_date datetime
+
+	Ref: order_pipeline_status_types.organization_id > organizations.id
+}
+
+Table order_pipeline_status [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_id uuid
+	pipeline_status_type_id uuid
+	internal_notes varchar(50)
+	is_active boolean
+	created_date datetime
+
+	Ref: order_pipeline_status.order_id > orders.id
+	Ref: order_pipeline_status.pipeline_status_type_id > order_pipeline_status_types.id
+}
+
+Table order_session_booked_slot [headercolor: #E85D04] {
+	id uuid [ pk, unique ]
+	order_session_id uuid
+	product_schedule_id uuid
+	book_date date
+	start_time time
+	end_time time
+	capacity_used int
+	status varchar
+	remarks text
+	is_active boolean
+	created_date datetime
+
+	indexes {
+		(id) [ name: 'order_session_booked_slot_index_0' ]
+	}
+
+	Ref: order_session_booked_slot.order_session_id > order_session.id
+	Ref: order_session_booked_slot.product_schedule_id > product_schedules.id
+}
+
+Table order_session_booked_slot_participants [headercolor: #E85D04] {
+  id uuid [ pk, unique ]
+  order_session_booked_slot_id uuid
+  child int [ default: 0 ]
+  adult int [ default: 0 ]
+  infant int [ default: 0 ]
+  senior int [ default: 0 ]
+  student int [ default: 0 ]
+  military int [ default: 0 ]
+  created_date datetime
+  updated_date datetime
+
+	Ref: order_session_booked_slot_participants.order_session_booked_slot_id > order_session_booked_slot.id
+}
+
+Table order_notes [headercolor: #E85D04] {
+  id uuid [pk, unique, note: 'Default: gen_random_uuid()']
+  order_id uuid [not null]
+  note text [not null]
+  is_urgent boolean [not null, default: false]
+  created_date timestamptz [not null, default: `now()`]
+  created_by varchar(255)
+  updated_date timestamptz
+  updated_by varchar(255)
+
+	Ref: order_notes.order_id > orders.id
+}
+
+Table payment_methods [headercolor: #E85D04] {
+  id uuid [pk, unique]
+  name varchar(255)
+  is_automated boolean [default: false]
+  is_active boolean [default: true]
+  created_date datetime
+}
+
+Table carts [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	organization_id uuid [ not null, note: 'Tenant Link: Agency A cannot see Agency B items' ]
+	session_id varchar [ note: 'Guest Tracking: Browser cookie/local storage ID' ]
+	currency varchar(3) [ default: 'PHP' ]
+	status varchar(20) [ default: 'active', note: 'active, converted, abandoned' ]
+	created_date datetime
+	updated_date datetime
+
+	Note: 'Represents the shopping session container'
+
+	Ref: carts.organization_id > organizations.id
+}
+
+Table cart_items [headercolor: #175e7a] {
+	id uuid [ pk, unique ]
+	cart_id uuid [ not null, note: 'Parent Cart Link' ]
+	member_id uuid
+	product_id uuid [ not null, note: 'Inventory Link' ]
+	bundle_id uuid [ note: 'Package Logic: Links to bundle if applicable' ]
+	travel_date date [ not null ]
+	time_slot time
+	created_date datetime
+
+	Note: 'Individual products linked to specific dates and schedules'
+
+	Ref: cart_items.cart_id > carts.id
+	Ref: cart_items.member_id > members.id
+	Ref: cart_items.product_id > products.id
+	Ref: cart_items.bundle_id > bundles.id
+}

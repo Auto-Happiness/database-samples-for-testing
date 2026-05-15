@@ -1,0 +1,24 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: orcha-erp-mssql
+    ports:
+      - "1435:1433"
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=OrchaAgentOS!2025
+      - MSSQL_PID=Developer
+      - MSSQL_MEMORY_LIMIT_MB=4096
+    volumes:
+      - mssql_data:/var/opt/mssql
+      - .:/usr/src/app
+    command: >
+      /bin/bash -c "
+      (cd /usr/src/app/erp && ./init-db.sh) &
+      /opt/mssql/bin/sqlservr
+      "
+    mem_limit: 4g
+
+volumes:
+  mssql_data:
