@@ -1,0 +1,12 @@
+services:
+  customer-db:
+    image: postgres:15-alpine
+    container_name: orcha-customer-pg
+    environment:
+      POSTGRES_USER: orcha
+      POSTGRES_PASSWORD: orcha_password
+      POSTGRES_DB: customer_service
+    ports:
+      - "5434:5432"
+    volumes:
+      - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql

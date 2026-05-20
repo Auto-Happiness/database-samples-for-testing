@@ -1,5 +1,5 @@
-$services = @("items", "order", "payment")
-$basePath = "c:\repos\orcha-agent-os\datasamples\multidatabase"
+$services = @("customer", "items", "order", "payments", "reviews")
+$basePath = $PSScriptRoot
 
 foreach ($service in $services) {
     $path = Join-Path $basePath $service
@@ -17,3 +17,4 @@ foreach ($service in $services) {
 }
 
 Write-Host "All multi-database services have been stopped." -ForegroundColor Green
+

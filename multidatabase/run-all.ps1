@@ -4,8 +4,8 @@ param (
     [string]$Action = "up"
 )
 
-$services = @("items", "order", "payment")
-$basePath = "c:\repos\orcha-agent-os\datasamples\multidatabase"
+$services = @("customer", "items", "order", "payments", "reviews")
+$basePath = $PSScriptRoot
 
 foreach ($service in $services) {
     $path = Join-Path $basePath $service
@@ -32,7 +32,10 @@ foreach ($service in $services) {
 
 if ($Action -eq "up") {
     Write-Host "All databases are starting up!" -ForegroundColor Green
-    Write-Host "Postgres (Items): localhost:5433"
-    Write-Host "MySQL (Orders): localhost:3307"
-    Write-Host "MSSQL (Payments): localhost:1436"
+    Write-Host "Postgres (Customer): localhost:5434"
+    Write-Host "Postgres (Items):    localhost:5433"
+    Write-Host "MySQL (Orders):      localhost:3307"
+    Write-Host "MySQL (Payments):    localhost:3308"
+    Write-Host "Postgres (Reviews):  localhost:5435"
 }
+

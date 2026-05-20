@@ -1,0 +1,12 @@
+services:
+  reviews-db:
+    image: postgres:15-alpine
+    container_name: orcha-reviews-pg
+    environment:
+      POSTGRES_USER: orcha
+      POSTGRES_PASSWORD: orcha_password
+      POSTGRES_DB: reviews_service
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./seed.sql:/docker-entrypoint-initdb.d/seed.sql
