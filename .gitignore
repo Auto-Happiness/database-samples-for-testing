@@ -13,3 +13,4 @@ mssql/data/secrets/
 *.swo
 *~
 .idea/
+.csv/

@@ -1,0 +1,24 @@
+
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: mariadb-gg-academy
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: gg_academy
+      MARIADB_USER: gguser
+      MARIADB_PASSWORD: ggpass
+    ports:
+      - "3312:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init/01_gg-academy.sql:/docker-entrypoint-initdb.d/01_gg-academy.sql:ro
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  db_data:
+    name: mariadb_gg_academy_data
+
