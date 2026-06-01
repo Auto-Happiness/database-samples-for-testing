@@ -1,0 +1,27 @@
+services:
+  oracle:
+    image: container-registry.oracle.com/database/free:latest-lite
+    container_name: oracle-free
+    ports:
+      # Standard Oracle Database port
+      - '1521:1521'
+    environment:
+      ORACLE_PWD: oracle
+      ORACLE_CHARACTERSET: AL32UTF8
+    volumes:
+      # Mount the SQL script to a temporary location inside the container
+      - './models.sql:/opt/oracle/models.sql:ro'
+      # Mount the setup shell script to be run on first startup
+      - './setup.sh:/opt/oracle/scripts/setup/001-setup.sh:ro'
+      # Persistent storage to prevent data loss when the container is removed
+      - 'oracle-data:/opt/oracle/oradata'
+    healthcheck:
+      # Uses the built-in script to verify the DB is actually ready to accept connections
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  oracle-data:
