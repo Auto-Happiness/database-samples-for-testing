@@ -390,3 +390,5 @@ SELECT 'Talents inserted: ' || COUNT(*) FROM talents;
 SELECT 'Occupations inserted: ' || COUNT(*) FROM occupation;
 SELECT 'Educations inserted: ' || COUNT(*) FROM education;
 SELECT 'Earnings inserted: ' || COUNT(*) FROM earnings;
+
+EXIT;
